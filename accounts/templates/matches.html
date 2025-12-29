@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+<head><title>Matches</title></head>
+<body>
+  <a href="{% url 'discover' %}">Discover</a>
+  <h2>Your Matches</h2>
+  {% for m in matches %}
+    <div>
+      <a href="{% url 'profile' m.username %}">{{ m.username }}</a>
+    </div>
+  {% empty %}
+    <p>No matches yet</p>
+  {% endfor %}
+</body>
+</html>

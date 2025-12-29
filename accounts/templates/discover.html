@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discover</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff4f84, #6a5af9);
+            color: white;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .top-bar {
+            text-align: right;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        /* User grid */
+        #users {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Each card */
+        .card {
+            width: 230px;
+            background: white;
+            color: black;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .card img {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .like-btn {
+            margin-top: 10px;
+            background: #ff4f84;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .like-btn:hover {
+            background: #e0135a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-bar">
+        Welcome, {{ request.user.username }} |
+        <a href="{% url 'matches' %}" style="color:white;">Matches</a> |
+        <a href="{% url 'logout' %}" style="color:white;">Logout</a>
+    </div>
+
+    <h2>Discover</h2>
+
+    <div id="users">
+        {% for u in users %}
+        <div class="card">
+            <a href="{% url 'profile' u.username %}">
+                {% if u.profile_picture %}
+                <img src="{{ u.profile_picture.url }}" alt="Profile Picture">
+                {% else %}
+                <img src="https://via.placeholder.com/200x200?text=No+Image" alt="No Image">
+                {% endif %}
+            </a>
+            <h3>{{ u.username }}</h3>
+            <p>{{ u.get_gender_display }} • {{ u.age }}</p>
+
+            <button class="like-btn" data-id="{{ u.id }}">❤ Like</button>
+        </div>
+        {% endfor %}
+    </div>
+
+<script>
+document.querySelectorAll('.like-btn').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    const id = btn.dataset.id;
+    const form = new FormData();
+    form.append('receiver_id', id);
+
+    const resp = await fetch("{% url 'like_user' %}", {
+      method: 'POST',
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},
+      body: form
+    });
+
+    const json = await resp.json();
+    alert(json.message);
+    if (json.status === 'match') {
+      window.location.href = "{% url 'matches' %}";
+    }
+  });
+});
+</script>
+
+</body>
+</html>

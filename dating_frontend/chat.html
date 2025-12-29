@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LoveConnect Chat</title>
+  <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">LoveConnect</div>
+
+    <div class="chat-list">
+      <div class="chat-item active">
+        <div class="avatar"></div>
+        <div>
+          <div class="name">Room 1</div>
+          <div class="last-msg">Online</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div class="chat-area">
+    <div class="chat-header">
+      <div class="avatar"></div>
+      <div>
+        <div class="name">Room 1</div>
+        <div class="status">online</div>
+      </div>
+    </div>
+
+    <div id="messages" class="messages"></div>
+
+    <div class="input-area">
+      <input id="messageInput" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+</div>
+<script>
+  const ws = new WebSocket("ws://127.0.0.1:8000/ws/chat/room1/");
+
+  ws.onmessage = (e) => {
+    const box = document.getElementById("messages");
+    const msg = document.createElement("div");
+    msg.className = "message";
+    msg.innerText = e.data;
+    box.appendChild(msg);
+    box.scrollTop = box.scrollHeight;
+  };
+
+  function sendMessage() {
+    const input = document.getElementById("messageInput");
+    if (input.value.trim() !== "") {
+      ws.send(input.value);
+      input.value = "";
+    }
+  }
+</script>
+</body>
+</html>

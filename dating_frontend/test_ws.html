@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Test</title>
+</head>
+<body>
+  <h1>WebSocket Test</h1>
+
+  <script>
+    let ws = new WebSocket("ws://127.0.0.1:8000/ws/chat/room1/");
+
+    ws.onopen = () => console.log("CONNECTED");
+    ws.onmessage = e => console.log("MSG:", e.data);
+    ws.onerror = e => console.error("ERR:", e);
+    ws.onclose = e => console.warn("CLOSED:", e);
+  </script>
+</body>
+</html>
