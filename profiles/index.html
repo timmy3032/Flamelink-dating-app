@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dating App</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            background: #ff4d6d;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #e63950;
+        }
+
+        .chat-box {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            height: 200px;
+            overflow-y: scroll;
+            margin-top: 10px;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🔥 Dating App</h1>
+
+<h2>Users</h2>
+<div id="users"></div>
+
+<h2>Matches</h2>
+<button onclick="loadMatches()">Load Matches</button>
+<div id="matches"></div>
+
+<h2>Chat</h2>
+<input type="number" id="sender" placeholder="Your ID">
+<input type="number" id="receiver" placeholder="Receiver ID">
+<input type="text" id="message" placeholder="Type message">
+<button onclick="sendMessage()">Send</button>
+
+<h2>Upload Profile Photo</h2>
+
+<input type="number" id="uploadUserId" placeholder="User ID">
+<input type="file" id="photoFile">
+<button onclick="uploadPhoto()">Upload Photo</button>
+
+<button onclick="loadMessages()">Load Messages</button>
+
+<div class="chat-box" id="messages"></div>
+
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000/api";
+
+// ---------------- USERS ----------------
+async function loadUsers() {
+    let res = await fetch(API + "/dashboard/");
+    let users = await res.json();
+
+    let html = "";
+
+    users.forEach(user => {
+        let image = user.photo 
+            ? "http://127.0.0.1:8000" + user.photo 
+            : "https://via.placeholder.com/50";
+
+        html += `
+        <div class="card">
+            <div class="user-info">
+                <img src="${image}" />
+                <div>
+                    <b>${user.username}</b><br>
+                    ID: ${user.id}
+                </div>
+            </div>
+            <button onclick="likeUser(${user.id})">❤️ Like</button>
+        </div>
+        `;
+    });
+
+    document.getElementById("users").innerHTML = html;
+}
+
+// ---------------- LIKE ----------------
+async function likeUser(receiver_id) {
+    let sender_id = prompt("Enter your user ID");
+
+    let res = await fetch(API + "/like/", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({sender_id, receiver_id})
+    });
+
+    let data = await res.json();
+    alert(data.message);
+}
+
+// ---------------- MATCHES ----------------
+async function loadMatches() {
+    let user_id = prompt("Enter your ID");
+
+    let res = await fetch(API + "/matches/" + user_id + "/");
+    let matches = await res.json();
+
+    let html = "";
+
+    matches.forEach(m => {
+        html += `<div class="card">❤️ Match: ${m.user1} & ${m.user2}</div>`;
+    });
+
+    document.getElementById("matches").innerHTML = html;
+}
+
+// ---------------- SEND MESSAGE ----------------
+async function sendMessage() {
+    let sender = document.getElementById("sender").value;
+    let receiver = document.getElementById("receiver").value;
+    let message = document.getElementById("message").value;
+
+    let res = await fetch(API + "/chat/send/", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            sender_id: sender,
+            receiver_id: receiver,
+            message: message
+        })
+    });
+
+    await res.json();
+    alert("Message sent!");
+}
+
+// ---------------- LOAD MESSAGES ----------------
+async function loadMessages() {
+    let sender = document.getElementById("sender").value;
+    let receiver = document.getElementById("receiver").value;
+
+    let res = await fetch(API + `/chat/messages/${sender}/${receiver}/`);
+    let messages = await res.json();
+
+    let html = "";
+
+    messages.forEach(msg => {
+        html += `
+        <p><b>${msg.sender}</b>: ${msg.message}</p>
+        `;
+    });
+
+    document.getElementById("messages").innerHTML = html;
+}
+
+async function uploadPhoto() {
+    let userId = document.getElementById("uploadUserId").value;
+    let fileInput = document.getElementById("photoFile");
+
+    let formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("photo", fileInput.files[0]);
+
+    let res = await fetch("http://127.0.0.1:8000/api/profile/upload/", {
+        method: "POST",
+        body: formData
+    });
+
+    let data = await res.json();
+    alert(JSON.stringify(data));
+}
+// AUTO LOAD USERS
+loadUsers();
+</script>
+
+</body>
+</html>

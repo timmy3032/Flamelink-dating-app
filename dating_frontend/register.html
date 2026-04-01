@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register - LoveConnect</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+font-family:Arial;
+background:#ff416c;
+color:white;
+text-align:center;
+padding:40px;
+}
+
+input{
+display:block;
+margin:10px auto;
+padding:12px;
+width:80%;
+max-width:300px;
+border:none;
+border-radius:5px;
+}
+
+button{
+padding:12px 20px;
+background:white;
+color:#ff416c;
+border:none;
+border-radius:20px;
+font-weight:bold;
+cursor:pointer;
+}
+
+a{
+color:white;
+display:block;
+margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Create Account</h1>
+
+<input type="text" placeholder="Username" id="username">
+<input type="email" placeholder="Email">
+<input type="password" placeholder="Password">
+
+<button onclick="register()">Register</button>
+
+<a href="login.html">Already have an account? Login</a>
+
+<script>
+function register(){
+alert("Registration successful (Demo)");
+window.location.href="dashboard.html";
+}
+</script>
+
+</body>
+</html>

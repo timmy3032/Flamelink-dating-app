@@ -10,10 +10,12 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Quick-start development settings
 SECRET_KEY = 'django-insecure--p#^mg54h!4g7v(p9qey=wi_u)j-wi!1chy%kb=)p%mla1vnl1'
-DEBUG = True
-ALLOWED_HOSTS = []
+DEBUG = False
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -24,14 +26,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Your apps
     'accounts',
+    'profiles',
+    'chat',
 
-    # ---- Added for Real-time Chat ----
-    "channels",      # WebSockets backend
-    "chat",          # Chat app
+    'rest_framework',
+    'channels',
 ]
-
 
 
 MIDDLEWARE = [
@@ -109,11 +110,15 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Media files
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Default PK field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

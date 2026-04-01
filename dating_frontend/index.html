@@ -2,27 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>LoveConnect</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoveConnect - Dating App</title>
-    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-top: 60px;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            display: block;
+            width: 80%;
+            max-width: 300px;
+            margin: 15px auto;
+            padding: 15px;
+            background: white;
+            color: #ff416c;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #ffe6ec;
+        }
+
+        footer {
+            margin-top: 60px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
 </head>
+
 <body>
 
-    <header>
-        <h1>LoveConnect ❤</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="#">Login</a>
-            <a href="#">Register</a>
-        </nav>
-    </header>
+    <div class="container">
+        <h1>❤️ LoveConnect</h1>
+        <p>Find love, make connections, and meet amazing people.</p>
 
-    <section class="hero">
-        <h2>Find Your Perfect Match</h2>
-        <p>Join thousands of people finding love online.</p>
-        <button class="btn">Get Started</button>
-    </section>
+        <a href="register.html" class="btn">Register</a>
+        <a href="login.html" class="btn">Login</a>
 
-    <script src="script.js"></script>
+        <footer>
+            © 2026 LoveConnect. All rights reserved.
+        </footer>
+    </div>
+
 </body>
 </html>

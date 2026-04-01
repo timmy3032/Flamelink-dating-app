@@ -1,12 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Dashboard - LoveConnect</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+font-family:Arial;
+background:#fff;
+text-align:center;
+padding:40px;
+}
+
+h1{
+color:#ff416c;
+}
+
+.card{
+background:#ffe6ec;
+padding:20px;
+margin:15px auto;
+width:80%;
+max-width:300px;
+border-radius:10px;
+}
+
+button{
+padding:10px 20px;
+background:#ff416c;
+color:white;
+border:none;
+border-radius:20px;
+cursor:pointer;
+}
+</style>
 </head>
+
 <body>
 
-    <h2 style="text-align:center; margin-top:50px;">Welcome to your Dashboard</h2>
+<h1>Welcome to LoveConnect ❤️</h1>
+
+<div class="card">
+<h3>Jane, 24</h3>
+<button>Connect</button>
+</div>
+
+<div class="card">
+<h3>Mary, 22</h3>
+<button>Connect</button>
+</div>
+
+<div class="card">
+<h3>Sarah, 25</h3>
+<button>Connect</button>
+</div>
+
+<br>
+
+<button onclick="logout()">Logout</button>
+
+<script>
+function logout(){
+window.location.href="index.html";
+}
+</script>
 
 </body>
 </html>
