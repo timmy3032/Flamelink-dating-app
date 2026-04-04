@@ -1,72 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>LoveConnect</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ff416c, #ff4b2b);
-            color: white;
-            text-align: center;
-        }
-
-        .container {
-            padding: 40px 20px;
-        }
-
-        h1 {
-            font-size: 36px;
-            margin-top: 60px;
-        }
-
-        p {
-            font-size: 18px;
-            margin: 20px 0;
-        }
-
-        .btn {
-            display: block;
-            width: 80%;
-            max-width: 300px;
-            margin: 15px auto;
-            padding: 15px;
-            background: white;
-            color: #ff416c;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .btn:hover {
-            background: #ffe6ec;
-        }
-
-        footer {
-            margin-top: 60px;
-            font-size: 14px;
-            opacity: 0.8;
-        }
-    </style>
+    <title>Flamelink Dating App</title>
 </head>
-
 <body>
 
-    <div class="container">
-        <h1>❤️ LoveConnect</h1>
-        <p>Find love, make connections, and meet amazing people.</p>
+<h1>🔥 Flamelink Dating App</h1>
 
-        <a href="register.html" class="btn">Register</a>
-        <a href="login.html" class="btn">Login</a>
+<h2>All Users</h2>
+<button onclick="loadUsers()">Load Users</button>
+<ul id="users"></ul>
 
-        <footer>
-            © 2026 LoveConnect. All rights reserved.
-        </footer>
-    </div>
+<h2>Like User</h2>
+<input id="sender" placeholder="Your ID">
+<input id="receiver" placeholder="User ID to like">
+<button onclick="likeUser()">Like</button>
+
+<h2>Matches</h2>
+<input id="matchUserId" placeholder="Your ID">
+<button onclick="getMatches()">Get Matches</button>
+<ul id="matches"></ul>
+
+<h2>Send Message</h2>
+<input id="msgSender" placeholder="Sender ID">
+<input id="msgReceiver" placeholder="Receiver ID">
+<input id="message" placeholder="Message">
+<button onclick="sendMessage()">Send</button>
+
+<script>
+const BASE_URL = "https://flamelink-dating-app.onrender.com/api";
+
+async function loadUsers() {
+    let res = await fetch(`${BASE_URL}/dashboard/`);
+    let data = await res.json();
+
+    let list = document.getElementById("users");
+    list.innerHTML = "";
+
+    data.forEach(user => {
+        let li = document.createElement("li");
+        li.innerText = `ID: ${user.id} - ${user.username}`;
+        list.appendChild(li);
+    });
+}
+
+async function likeUser() {
+    let sender = document.getElementById("sender").value;
+    let receiver = document.getElementById("receiver").value;
+
+    let res = await fetch(`${BASE_URL}/like/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sender_id: sender, receiver_id: receiver })
+    });
+
+    let data = await res.json();
+    alert(JSON.stringify(data));
+}
+
+async function getMatches() {
+    let userId = document.getElementById("matchUserId").value;
+
+    let res = await fetch(`${BASE_URL}/matches/${userId}/`);
+    let data = await res.json();
+
+    let list = document.getElementById("matches");
+    list.innerHTML = "";
+
+    data.forEach(match => {
+        let li = document.createElement("li");
+        li.innerText = `Match: ${match.user1} ❤️ ${match.user2}`;
+        list.appendChild(li);
+    });
+}
+
+async function sendMessage() {
+    let sender = document.getElementById("msgSender").value;
+    let receiver = document.getElementById("msgReceiver").value;
+    let message = document.getElementById("message").value;
+
+    let res = await fetch("https://flamelink-dating-app.onrender.com/api/chat/send/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            sender_id: sender,
+            receiver_id: receiver,
+            message: message
+        })
+    });
+
+    let data = await res.json();
+    alert(JSON.stringify(data));
+}
+</script>
 
 </body>
 </html>

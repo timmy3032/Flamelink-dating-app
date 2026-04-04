@@ -18,7 +18,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 # Application definition
-INSTALLED_APPS = [
+    INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -32,10 +32,14 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'channels',
+
+    'corsheaders',  # ✅ ADD THIS
 ]
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # ✅ ADD THIS FIRST
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -122,3 +126,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CORS_ALLOW_ALL_ORIGINS = True
