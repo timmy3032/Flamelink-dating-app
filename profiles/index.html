@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dating App</title>
+    <title>Flamelink Dating App</title>
 
     <style>
         body {
@@ -76,7 +76,7 @@
 
 <div class="container">
 
-<h1>🔥 Dating App</h1>
+<h1>🔥 Flamelink Dating App</h1>
 
 <h2>Users</h2>
 <div id="users"></div>
@@ -92,7 +92,6 @@
 <button onclick="sendMessage()">Send</button>
 
 <h2>Upload Profile Photo</h2>
-
 <input type="number" id="uploadUserId" placeholder="User ID">
 <input type="file" id="photoFile">
 <button onclick="uploadPhoto()">Upload Photo</button>
@@ -104,40 +103,49 @@
 </div>
 
 <script>
-const API = "http://127.0.0.1:8000/api";
+const BASE = "https://flamelink-dating-app.onrender.com";
+const API = BASE + "/api";
 
 // ---------------- USERS ----------------
 async function loadUsers() {
-    let res = await fetch(API + "/dashboard/");
-    let users = await res.json();
+    try {
+        let res = await fetch(API + "/dashboard/");
+        let users = await res.json();
 
-    let html = "";
+        let html = "";
 
-    users.forEach(user => {
-        let image = user.photo 
-            ? "http://127.0.0.1:8000" + user.photo 
-            : "https://via.placeholder.com/50";
+        users.forEach(user => {
+            let image = user.photo 
+                ? BASE + user.photo 
+                : "https://via.placeholder.com/50";
 
-        html += `
-        <div class="card">
-            <div class="user-info">
-                <img src="${image}" />
-                <div>
-                    <b>${user.username}</b><br>
-                    ID: ${user.id}
+            html += `
+            <div class="card">
+                <div class="user-info">
+                    <img src="${image}" />
+                    <div>
+                        <b>${user.username}</b><br>
+                        ID: ${user.id}
+                    </div>
                 </div>
+                <button onclick="likeUser(${user.id})">❤️ Like</button>
             </div>
-            <button onclick="likeUser(${user.id})">❤️ Like</button>
-        </div>
-        `;
-    });
+            `;
+        });
 
-    document.getElementById("users").innerHTML = html;
+        document.getElementById("users").innerHTML = html;
+
+    } catch (error) {
+        alert("Error loading users");
+        console.error(error);
+    }
 }
 
 // ---------------- LIKE ----------------
 async function likeUser(receiver_id) {
     let sender_id = prompt("Enter your user ID");
+
+    if (!sender_id) return alert("Enter your ID");
 
     let res = await fetch(API + "/like/", {
         method: "POST",
@@ -152,6 +160,8 @@ async function likeUser(receiver_id) {
 // ---------------- MATCHES ----------------
 async function loadMatches() {
     let user_id = prompt("Enter your ID");
+
+    if (!user_id) return;
 
     let res = await fetch(API + "/matches/" + user_id + "/");
     let matches = await res.json();
@@ -171,6 +181,10 @@ async function sendMessage() {
     let receiver = document.getElementById("receiver").value;
     let message = document.getElementById("message").value;
 
+    if (!sender || !receiver || !message) {
+        return alert("Fill all fields");
+    }
+
     let res = await fetch(API + "/chat/send/", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -181,8 +195,8 @@ async function sendMessage() {
         })
     });
 
-    await res.json();
-    alert("Message sent!");
+    let data = await res.json();
+    alert(data.message || "Message sent!");
 }
 
 // ---------------- LOAD MESSAGES ----------------
@@ -190,36 +204,42 @@ async function loadMessages() {
     let sender = document.getElementById("sender").value;
     let receiver = document.getElementById("receiver").value;
 
+    if (!sender || !receiver) return alert("Enter both IDs");
+
     let res = await fetch(API + `/chat/messages/${sender}/${receiver}/`);
     let messages = await res.json();
 
     let html = "";
 
     messages.forEach(msg => {
-        html += `
-        <p><b>${msg.sender}</b>: ${msg.message}</p>
-        `;
+        html += `<p><b>${msg.sender}</b>: ${msg.message}</p>`;
     });
 
     document.getElementById("messages").innerHTML = html;
 }
 
+// ---------------- UPLOAD PHOTO ----------------
 async function uploadPhoto() {
     let userId = document.getElementById("uploadUserId").value;
     let fileInput = document.getElementById("photoFile");
+
+    if (!userId || !fileInput.files[0]) {
+        return alert("Provide user ID and image");
+    }
 
     let formData = new FormData();
     formData.append("user_id", userId);
     formData.append("photo", fileInput.files[0]);
 
-    let res = await fetch("http://127.0.0.1:8000/api/profile/upload/", {
+    let res = await fetch(API + "/profile/upload/", {
         method: "POST",
         body: formData
     });
 
     let data = await res.json();
-    alert(JSON.stringify(data));
+    alert(data.message || "Uploaded!");
 }
+
 // AUTO LOAD USERS
 loadUsers();
 </script>
