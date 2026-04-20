@@ -2,48 +2,133 @@
 <html>
 <head>
     <title>Flamelink Dating App</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        button {
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+            width: 30%;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .user-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>🔥 Flamelink Dating App</h1>
+<div class="container">
 
-<h2>All Users</h2>
-<button onclick="loadUsers()">Load Users</button>
-<ul id="users"></ul>
+    <h1>🔥 Flamelink Dating App</h1>
 
-<h2>Like User</h2>
-<input id="sender" placeholder="Your ID">
-<input id="receiver" placeholder="User ID to like">
-<button onclick="likeUser()">Like</button>
+    <!-- USERS -->
+    <div class="card">
+        <h2>All Users</h2>
+        <button onclick="loadUsers()">Load Users</button>
+        <div id="users"></div>
+    </div>
 
-<h2>Matches</h2>
-<input id="matchUserId" placeholder="Your ID">
-<button onclick="getMatches()">Get Matches</button>
-<ul id="matches"></ul>
+    <!-- LIKE -->
+    <div class="card">
+        <h2>Like User</h2>
+        <input id="sender" placeholder="Your ID">
+        <input id="receiver" placeholder="User ID to like">
+        <button onclick="likeUser()">Like</button>
+    </div>
 
-<h2>Send Message</h2>
-<input id="msgSender" placeholder="Sender ID">
-<input id="msgReceiver" placeholder="Receiver ID">
-<input id="message" placeholder="Message">
-<button onclick="sendMessage()">Send</button>
+    <!-- MATCHES -->
+    <div class="card">
+        <h2>Matches</h2>
+        <input id="matchUserId" placeholder="Your ID">
+        <button onclick="getMatches()">Get Matches</button>
+        <ul id="matches"></ul>
+    </div>
+
+    <!-- CHAT -->
+    <div class="card">
+        <div id="chatBox"></div>
+        <h2>Send Message</h2>
+        <input id="msgSender" placeholder="Sender ID">
+        <input id="msgReceiver" placeholder="Receiver ID">
+        <input id="message" placeholder="Message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+</div>
 
 <script>
 const BASE_URL = "https://flamelink-dating-app.onrender.com/api";
 
+// LOAD USERS WITH IMAGE
 async function loadUsers() {
     let res = await fetch(`${BASE_URL}/dashboard/`);
     let data = await res.json();
 
-    let list = document.getElementById("users");
-    list.innerHTML = "";
+    let container = document.getElementById("users");
+    container.innerHTML = "";
 
     data.forEach(user => {
-        let li = document.createElement("li");
-        li.innerText = `ID: ${user.id} - ${user.username}`;
-        list.appendChild(li);
+
+        let photo = user.profile?.photo
+            ? "https://flamelink-dating-app.onrender.com" + user.profile.photo
+            : "https://via.placeholder.com/60";
+
+        let div = document.createElement("div");
+        div.className = "user-card";
+
+        div.innerHTML = `
+            <img src="${photo}" />
+            <p>ID: ${user.id} - ${user.username}</p>
+        `;
+
+        container.appendChild(div);
     });
 }
 
+// LIKE USER
 async function likeUser() {
     let sender = document.getElementById("sender").value;
     let receiver = document.getElementById("receiver").value;
@@ -58,6 +143,7 @@ async function likeUser() {
     alert(JSON.stringify(data));
 }
 
+// GET MATCHES
 async function getMatches() {
     let userId = document.getElementById("matchUserId").value;
 
@@ -74,21 +160,23 @@ async function getMatches() {
     });
 }
 
-async function sendMessage() {
-    let sender = document.getElementById("msgSender").value;
-    let receiver = document.getElementById("msgReceiver").value;
-    let message = document.getElementById("message").value;
+// SEND MESSAGE
+const socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/");
 
-    let res = await fetch("https://flamelink-dating-app.onrender.com/api/chat/send/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            sender_id: sender,
-            receiver_id: receiver,
-            message: message
-        })
-    });
+socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
 
+    let chatBox = document.getElementById("chatBox");
+    chatBox.innerHTML += `<p>${data.message}</p>`;
+};
+
+function sendMessage() {
+    let msg = document.getElementById("message").value;
+
+    socket.send(JSON.stringify({
+        message: msg
+    }));
+}
     let data = await res.json();
     alert(JSON.stringify(data));
 }
